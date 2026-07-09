@@ -1,0 +1,16 @@
+FOODFLOW RECEIPT
+------------------------------------------------------------------------
+Order ID: FF-1001
+Customer: abdur (razzak)
+Type: DELIVERY
+Address: 01798091617
+Payment: CASH
+------------------------------------------------------------------------
+1x Chicken Pizza        SMALL, extra cheese, spicy         587.00     587.00
+------------------------------------------------------------------------
+Subtotal:                     587.00
+Service charges:               80.00
+Discount:                      58.70
+Total:                        608.30
+Instructions: CLI order
+
