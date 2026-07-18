@@ -1,10 +1,8 @@
 package model;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+
 
 /**
  * Represents a placed food order.
@@ -15,70 +13,47 @@ import java.util.Objects;
  * validation, and pricing flags. Students should refactor this design without
  * changing the observable behavior of the program.
  */
+
 public class Order {
     public static final double DELIVERY_FEE = 80.0;
     public static final double RUSH_FEE = 120.0;
     public static final double GIFT_WRAP_FEE = 50.0;
-
     private final String orderId;
     private final String customerName;
     private final String phone;
+    private final List<OrderItem> items;
     private final DeliveryType deliveryType;
-    private final String deliveryAddress;
     private final PaymentMethod paymentMethod;
-    private final LocalDateTime scheduledTime;
     private final String couponCode;
+    private final int loyaltyPointsToRedeem;
+    private final String specialInstructions;
+    private final String deliveryAddress;
+    private final LocalDateTime scheduledTime;
     private final boolean giftWrap;
     private final boolean cutleryRequired;
-    private final int loyaltyPointsToRedeem;
     private final boolean rushOrder;
-    private final List<OrderItem> items;
-    private final String specialInstructions;
 
-    public Order(String orderId,
-                 String customerName,
-                 String phone,
-                 DeliveryType deliveryType,
-                 String deliveryAddress,
-                 PaymentMethod paymentMethod,
-                 LocalDateTime scheduledTime,
-                 String couponCode,
-                 boolean giftWrap,
-                 boolean cutleryRequired,
-                 int loyaltyPointsToRedeem,
-                 boolean rushOrder,
-                 List<OrderItem> items,
-                 String specialInstructions) {
-        this.orderId = requireNonBlank(orderId, "Order id");
-        this.customerName = requireNonBlank(customerName, "Customer name");
-        this.phone = requireNonBlank(phone, "Phone");
-        this.deliveryType = deliveryType != null ? deliveryType : DeliveryType.PICKUP;
-        this.paymentMethod = paymentMethod != null ? paymentMethod : PaymentMethod.CASH;
-        this.scheduledTime = scheduledTime;
-        this.couponCode = couponCode != null ? couponCode.trim().toUpperCase() : "";
-        this.giftWrap = giftWrap;
-        this.cutleryRequired = cutleryRequired;
-        this.loyaltyPointsToRedeem = Math.max(0, loyaltyPointsToRedeem);
-        this.rushOrder = rushOrder;
-        this.specialInstructions = specialInstructions != null ? specialInstructions.trim() : "";
 
-        if (this.deliveryType == DeliveryType.DELIVERY) {
-            this.deliveryAddress = requireNonBlank(deliveryAddress, "Delivery address");
-        } else {
-            this.deliveryAddress = deliveryAddress != null ? deliveryAddress.trim() : "";
-        }
 
-        Objects.requireNonNull(items, "Items cannot be null");
-        if (items.isEmpty()) {
-            throw new IllegalArgumentException("Order must contain at least one item");
-        }
-        this.items = Collections.unmodifiableList(new ArrayList<>(items));
+    public Order(OrderBuilder orderBuilder) {
+
+        this.orderId =orderBuilder.orderId;
+        this.customerName = orderBuilder.customerName;
+        this.phone = orderBuilder.phone;
+        
+        this.deliveryType = orderBuilder.deliveryType;
+        this.paymentMethod = orderBuilder.paymentMethod;
+        this.scheduledTime = orderBuilder.scheduledTime;
+        this.couponCode = orderBuilder.couponCode;
+        this.giftWrap = orderBuilder.giftWrap;
+        this.cutleryRequired = orderBuilder.cutleryRequired;
+        this.loyaltyPointsToRedeem = orderBuilder.loyaltyPointsToRedeem;
+        this.rushOrder = orderBuilder.rushOrder;
+        this.specialInstructions = orderBuilder.specialInstructions;
+        this.items = orderBuilder.items;
+        this.deliveryAddress = orderBuilder.deliveryAddress;
     }
 
-    public Order(String orderId, String customerName, String phone, List<OrderItem> items) {
-        this(orderId, customerName, phone, DeliveryType.PICKUP, "", PaymentMethod.CASH,
-                null, "", false, true, 0, false, items, "");
-    }
 
     public String getOrderId() {
         return orderId;
@@ -170,12 +145,5 @@ public class Order {
         return Math.max(0.0, getSubtotal() + getServiceCharges() - getDiscount());
     }
 
-    private static String requireNonBlank(String value, String fieldName) {
-        Objects.requireNonNull(value, fieldName + " cannot be null");
-        String trimmed = value.trim();
-        if (trimmed.isEmpty()) {
-            throw new IllegalArgumentException(fieldName + " cannot be blank");
-        }
-        return trimmed;
-    }
+
 }

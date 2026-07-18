@@ -3,6 +3,7 @@ package service;
 import model.DeliveryType;
 import model.MenuItem;
 import model.Order;
+import model.OrderBuilder;
 import model.OrderItem;
 import model.PaymentMethod;
 import model.Size;
@@ -17,6 +18,8 @@ import java.util.List;
  * Several methods below repeat long Order constructor calls with many optional
  * parameters. That is intentional assignment material for refactoring.
  */
+
+
 public class OrderService {
     private int nextNumber = 1001;
 
@@ -31,33 +34,18 @@ public class OrderService {
                                      String couponCode,
                                      boolean rushOrder,
                                      String specialInstructions) {
-        return new Order(nextOrderId(), customerName, phone,
-                DeliveryType.DELIVERY,
-                address,
-                PaymentMethod.CASH,
-                null,
-                couponCode,
-                false,
-                true,
-                0,
-                rushOrder,
-                items,
-                specialInstructions);
+        return new OrderBuilder(nextOrderId(), customerName, phone,items)
+        .deliveryType(DeliveryType.DELIVERY)
+        .deliveryAddress(address)
+        .couponCode(couponCode)
+        .rushOrder(rushOrder)
+        .specialInstructions(specialInstructions)
+        .build();
     }
 
     public Order createPickupOrder(String customerName, String phone, List<OrderItem> items) {
-        return new Order(nextOrderId(), customerName, phone,
-                DeliveryType.PICKUP,
-                "",
-                PaymentMethod.CASH,
-                null,
-                "",
-                false,
-                true,
-                0,
-                false,
-                items,
-                "");
+        return new OrderBuilder(nextOrderId(),customerName,phone,items).build();
+        
     }
 
     public Order createScheduledGiftOrder(String customerName,
@@ -65,18 +53,17 @@ public class OrderService {
                                           String address,
                                           List<OrderItem> items,
                                           LocalDateTime scheduledTime) {
-        return new Order(nextOrderId(), customerName, phone,
-                DeliveryType.DELIVERY,
-                address,
-                PaymentMethod.CARD,
-                scheduledTime,
-                "WELCOME10",
-                true,
-                false,
-                25,
-                false,
-                items,
-                "Please call before delivery");
+        return new OrderBuilder(nextOrderId(),customerName,phone,items)
+        .deliveryType(DeliveryType.DELIVERY)
+        .deliveryAddress(address)
+        .paymentMethod(PaymentMethod.CARD)
+        .scheduledTime(scheduledTime)
+        .couponCode("WELCOME10")
+        .giftWrap(true)
+        .loyaltyPointsToRedeem(25)
+        .cutleryRequired(false)
+        .specialInstructions("Please call before delivery")
+        .build();
     }
 
     public Order createSampleFamilyOrder(MenuCatalog catalog) {
@@ -86,20 +73,15 @@ public class OrderService {
         items.add(new OrderItem(catalog.findByCode("D02"), 4, Size.MEDIUM, false, false, "less sugar"));
         items.add(new OrderItem(catalog.findByCode("S02"), 2, Size.LARGE, false, true, ""));
 
-        return new Order(nextOrderId(),
-                "Sample Family",
-                "01711111111",
-                DeliveryType.DELIVERY,
-                "House 25, Road 4, Dhanmondi",
-                PaymentMethod.MOBILE_BANKING,
-                null,
-                "FAMILY15",
-                false,
-                true,
-                50,
-                true,
-                items,
-                "Deliver together");
+        return new OrderBuilder(nextOrderId(),"Sample Family", "01711111111", items)
+         .deliveryType(DeliveryType.DELIVERY)
+         .deliveryAddress("House 25, Road 4, Dhanmondi") 
+         .paymentMethod(PaymentMethod.MOBILE_BANKING) 
+         .couponCode("FAMILY15")
+         .loyaltyPointsToRedeem(50)
+         .rushOrder(true) 
+         .specialInstructions("Deliver together")
+        .build();
     }
 
     private String nextOrderId() {
